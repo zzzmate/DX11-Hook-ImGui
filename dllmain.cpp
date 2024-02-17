@@ -16,6 +16,7 @@ QWORD WINAPI MainThread(LPVOID param)
 	}
 	
 	RunBackend.Unload(); // unload everything
+	FreeLibraryAndExitThread((HMODULE)param, 0);
 	return 0;
 }
 
