@@ -13,4 +13,4 @@ Structure:
 
 For C++ related question to help you out, join here: https://discord.gg/Tj6xaTKk3W.
 
-If u can please Star this project. ⭐
+If u can please **star** this project. ⭐
