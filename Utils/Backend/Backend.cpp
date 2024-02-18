@@ -3,9 +3,6 @@
 Backend::presentVariable originalPresent;
 Backend::presentVariable hookedPresent;
 
-WNDPROC originalWndProc;
-DXGI_SWAP_CHAIN_DESC sd;
-
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 static bool init = false;
@@ -41,7 +38,7 @@ LRESULT __stdcall WndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 	if (RunBackend.m_bOpenMenu && ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam)) // if menu open then handle imgui events
 		return true;
 
-	return CallWindowProc(originalWndProc, hWnd, uMsg, wParam, lParam);
+	return CallWindowProc(RunBackend.m_goriginalWndProc, hWnd, uMsg, wParam, lParam);
 }
 
 void Backend::LoadImGui(HWND window, ID3D11Device* device, ID3D11DeviceContext* context)
@@ -92,7 +89,7 @@ void Backend::UnloadDevices(bool renderTargetViewReset)
 	if(renderTargetViewReset) if (m_gMainRenderTargetView) { m_gMainRenderTargetView->Release(); m_gMainRenderTargetView = nullptr; }
 	if (m_gPointerContext) { m_gPointerContext->Release(); m_gPointerContext = nullptr; }
 	if (m_gDevice) { m_gDevice->Release(); m_gDevice = nullptr; }
-	SetWindowLongPtr(m_gWindow, GWLP_WNDPROC, (LONG_PTR)(originalWndProc));
+	SetWindowLongPtr(m_gWindow, GWLP_WNDPROC, (LONG_PTR)(m_goriginalWndProc));
 }
 
 static long __stdcall PresentHook(IDXGISwapChain* pointerSwapChain, UINT sync, UINT flags)
@@ -101,15 +98,15 @@ static long __stdcall PresentHook(IDXGISwapChain* pointerSwapChain, UINT sync, U
 		if (SUCCEEDED(pointerSwapChain->GetDevice(__uuidof(ID3D11Device), (void**)&RunBackend.m_gDevice))) // check if device working 
 		{
 			RunBackend.m_gDevice->GetImmediateContext(&RunBackend.m_gPointerContext); // need context immediately!!
-			pointerSwapChain->GetDesc(&sd); // welp we need the presenthook's outputwindow so it's actually ours o_o
-			RunBackend.m_gWindow = sd.OutputWindow;
+			pointerSwapChain->GetDesc(&RunBackend.m_gPresentHookSwapChain); // welp we need the presenthook's outputwindow so it's actually ours o_o
+			RunBackend.m_gWindow = RunBackend.m_gPresentHookSwapChain.OutputWindow;
 
 			pointerSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&RunBackend.m_gPointerBackBuffer); // getting back buffer
 			if (RunBackend.m_gPointerBackBuffer != nullptr) RunBackend.m_gDevice->CreateRenderTargetView(RunBackend.m_gPointerBackBuffer, NULL, &RunBackend.m_gMainRenderTargetView); // from backbuffer to our monitor
 			RunBackend.m_gPointerBackBuffer->Release(); // don't need this shit anymore, but please comeback the next injection
 
 			RunBackend.LoadImGui(RunBackend.m_gWindow, RunBackend.m_gDevice, RunBackend.m_gPointerContext); // load imgui!!!
-			originalWndProc = (WNDPROC)SetWindowLongPtr(RunBackend.m_gWindow, GWLP_WNDPROC, (LONG_PTR)WndProc); // i think u need this
+			RunBackend.m_goriginalWndProc = (WNDPROC)SetWindowLongPtr(RunBackend.m_gWindow, GWLP_WNDPROC, (LONG_PTR)WndProc); // i think u need this
 
 			init = true;
 		}

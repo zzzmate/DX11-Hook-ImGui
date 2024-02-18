@@ -21,12 +21,14 @@ public:
 	ID3D11Device* m_gDevice = nullptr;
 	const D3D_FEATURE_LEVEL m_gFeatureLevels[2] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0 };
 	HWND m_gWindow = NULL;
-	ID3D11Device* m_gPointerDevice = nullptr;
 	ID3D11DeviceContext* m_gPointerContext = nullptr;
 	ID3D11RenderTargetView* m_gMainRenderTargetView = nullptr;
 	ID3D11Texture2D* m_gPointerBackBuffer = nullptr;
 public:
-	bool m_bOpenMenu = true;
+	WNDPROC m_goriginalWndProc;
+	DXGI_SWAP_CHAIN_DESC m_gPresentHookSwapChain;
+public:
+	bool m_bOpenMenu = true; // no need to extern it, only used in Backend.cpp
 };
 
 extern Backend RunBackend;
