@@ -1,6 +1,8 @@
 #pragma once
 
 #define WIN32_LEAN_AND_MEAN
+#define UNINJECT_KEY VK_DELETE
+#define OPEN_MENU_KEY VK_INSERT
 #include <windows.h>
 #include <thread>
 #include <MinHook.h> // @IF ERROR: install please vcpkg then run this: "vcpkg install minhook:x64-windows-static"

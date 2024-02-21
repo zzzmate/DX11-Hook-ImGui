@@ -52,25 +52,25 @@ void Backend::LoadImGui(HWND window, ID3D11Device* device, ID3D11DeviceContext* 
 
 void Backend::DrawImGui(ID3D11DeviceContext* context, ID3D11RenderTargetView* targetview)
 {
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+
+	ImGui::NewFrame();
+
 	if (m_bOpenMenu)
 	{
-		ImGui_ImplDX11_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-
-		ImGui::NewFrame();
-
 		ImGui::Begin("DirectX11 Hook", &m_bOpenMenu);
 		{ // not needed, but better visually
 			ImGui::Text("https://github.com/zzzmate - DX11 Hook");
 		}
 		ImGui::End();
-
-		ImGui::EndFrame();
-		ImGui::Render();
-
-		context->OMSetRenderTargets(1, &targetview, NULL);  // 1 render target, render it to our monitor, no dsv
-		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData()); // drawing the imgui menu
 	}
+
+	ImGui::EndFrame();
+	ImGui::Render();
+
+	context->OMSetRenderTargets(1, &targetview, NULL);  // 1 render target, render it to our monitor, no dsv
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData()); // drawing the imgui menu
 }
 
 void Backend::UnloadImGui()
@@ -113,6 +113,9 @@ static long __stdcall PresentHook(IDXGISwapChain* pointerSwapChain, UINT sync, U
 		else
 			return originalPresent(pointerSwapChain, sync, flags); // returning original too
 	}
+
+	if (Utils::keyPressed(OPEN_MENU_KEY))
+		RunBackend.m_bOpenMenu = !RunBackend.m_bOpenMenu;
 
 	RunBackend.DrawImGui(RunBackend.m_gPointerContext, RunBackend.m_gMainRenderTargetView); // draw imgui every time
 	return originalPresent(pointerSwapChain, sync, flags); // return the original so no stack corruption

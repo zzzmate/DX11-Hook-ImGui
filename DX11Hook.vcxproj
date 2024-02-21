@@ -85,8 +85,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)\build\$(Platform)</OutDir>
-    <IntDir>$(SolutionDir)\intermediate\$(Platform)</IntDir>
+    <OutDir>$(SolutionDir)\Build\$(Platform)</OutDir>
+    <IntDir>$(SolutionDir)\Intermediate\$(Platform)</IntDir>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnabled>true</VcpkgEnabled>
