@@ -11,6 +11,6 @@ Structure:
 - Build\Platform\Dll.
 - Intermediate\Platform\Files.
 
-For C++ related question to help you out, join here: https://discord.gg/Tj6xaTKk3W.
+For C++ related question to help you out, join here: /closed/.
 
 If u can please **star** this project. ⭐
